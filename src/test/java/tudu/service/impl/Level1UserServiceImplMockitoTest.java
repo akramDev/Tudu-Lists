@@ -1,15 +1,21 @@
 package tudu.service.impl;
 
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mock.*;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import tudu.domain.User;
 import tudu.service.UserAlreadyExistsException;
 
 import javax.persistence.EntityManager;
+
+import static org.mockito.Mockito.*;
+import static junit.framework.Assert.*;
 
 public class Level1UserServiceImplMockitoTest {
 
@@ -37,10 +43,11 @@ public class Level1UserServiceImplMockitoTest {
     @Test
     public void find_user_should_return_the_user() {
         //given
-
+        when(entityManager.find(User.class, "test_user")).thenReturn(user);
         //when
-
+        User newUser = userService.findUser("test_user");
         //then
+        assertEquals(user, newUser);
     }
 
     @Test
@@ -54,8 +61,9 @@ public class Level1UserServiceImplMockitoTest {
         //given
 
         //when
-
+         userService.updateUser(user);
         //then
+        verify(entityManager, times(1)).merge(user);
     }
 
     @Test
@@ -66,10 +74,11 @@ public class Level1UserServiceImplMockitoTest {
     */
     public void user_should_be_retrieved() {
         //given
-
+        when(entityManager.find(User.class, "toto")).thenReturn(user);
         //when
-
+        userService.findUser("toto");
         //then
+        verify(entityManager, times(1)).find(User.class, "toto");
     }
 
 
@@ -80,10 +89,14 @@ public class Level1UserServiceImplMockitoTest {
     @Test
     public void error_should_be_thrown_when_a_user_is_not_found() {
         //given
-
+        when(entityManager.find(User.class, "toto")).thenReturn(null);
         //when
-
-        //then
+        try{
+            userService.findUser("toto");
+        }catch (Exception e){
+            //then
+            assertTrue(e instanceof ObjectRetrievalFailureException);
+        }
 
     }
 
@@ -95,10 +108,14 @@ public class Level1UserServiceImplMockitoTest {
     @Test
     public void exception_should_be_thrown_when_creating_an_already_existed_user() throws UserAlreadyExistsException {
         //given
-
-        //when
-
-        //then
+        when(entityManager.find(User.class, "test_user")).thenReturn(user);
+        try {
+            //when
+            userService.createUser(user);
+        }catch (Exception e) {
+            //then
+            assertTrue(e instanceof UserAlreadyExistsException);
+        }
     }
 
     /*
@@ -111,8 +128,9 @@ public class Level1UserServiceImplMockitoTest {
         //given
 
         //when
-
+        userService.createUser(user);
         //then
+        verify(entityManager, atLeastOnce()).persist(user);
     }
 
 
