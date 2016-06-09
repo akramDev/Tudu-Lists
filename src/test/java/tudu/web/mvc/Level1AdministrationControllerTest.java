@@ -18,6 +18,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class Level1AdministrationControllerTest {
@@ -50,10 +51,11 @@ public class Level1AdministrationControllerTest {
     @Test
     public void update_shouldnt_return_a_null_model() throws Exception {
          // given
-
+        AdministrationModel administrationModel = new AdministrationModel();
         // when
-
+        ModelAndView modelAndView = adminController.update(administrationModel);
         // then
+        assertNotNull(modelAndView);
     }
 
 

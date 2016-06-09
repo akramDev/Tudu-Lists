@@ -1,11 +1,13 @@
 package tudu.web.mvc;
 
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.servlet.ModelAndView;
 import tudu.domain.Property;
@@ -20,13 +22,31 @@ import static org.mockito.Mockito.*;
 
 public class Level2AdministrationControllerTest {
 
+    @Mock
+    private ConfigurationService cfgService;
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
+    private AdministrationController adminController = new AdministrationController();
+
+    @Before
+    public void before() {
+        MockitoAnnotations.initMocks(this);
+    }
+
       /*
      * - Vérifier qu'aucune interactions n'a lieu lorsque la page demandée n'est ni "configuration" ni "users"
      * Méthode :  display
      */
     @Test
     public void display_should_not_interact_when_page_different_than_configuration_or_users() throws Exception {
-        }
+
+        adminController.display("test");
+
+        verifyNoMoreInteractions(userService, cfgService);
+
+    }
 
     /*
     *
@@ -35,7 +55,14 @@ public class Level2AdministrationControllerTest {
     */
     @Test
     public void display_should_read_configService_properties_when_page_is_configuration() throws Exception {
-     }
+
+        when(cfgService.getProperty(anyString())).thenReturn(property(anyString()));
+
+        adminController.display("configuration");
+
+        verifyNoMoreInteractions(userService);
+
+    }
 
 
     /*
@@ -44,7 +71,17 @@ public class Level2AdministrationControllerTest {
     */
     @Test
     public void update_enable_user_on_enableUser_action() throws Exception {
-     }
+
+        AdministrationModel administrationModel = new AdministrationModel();
+        administrationModel.setAction("enableUser");
+
+        adminController.update(administrationModel);
+
+        verify(userService, atLeastOnce()).enableUser(anyString());
+
+        verify(userService, never()).disableUser(anyString());
+
+    }
 
     /*
     * - Vérifer que pour l'action "disableUser" le service afférent est appelé et que enableUser ne l'est pas (d'une manière différente)
@@ -52,6 +89,7 @@ public class Level2AdministrationControllerTest {
     */
     @Test
     public void update_can_disable_user_on_disableUser_action() throws Exception {
+
     }
 
     /*
@@ -61,6 +99,24 @@ public class Level2AdministrationControllerTest {
     */
     @Test
     public void update_should_fetch_users_on_login_after_disabling_suer() throws Exception {
+
+        AdministrationModel administrationModel = new AdministrationModel();
+        administrationModel.setAction("enableUser");
+
+        adminController.update(administrationModel);
+
+        administrationModel.setAction("disableUser");
+
+        adminController.update(administrationModel);
+
+        verify(userService, atLeastOnce()).findUsersByLogin(anyString());
+
+    }
+
+    private Property property(String value) {
+        Property property = new Property();
+        property.setValue(value);
+        return property;
     }
 
 
