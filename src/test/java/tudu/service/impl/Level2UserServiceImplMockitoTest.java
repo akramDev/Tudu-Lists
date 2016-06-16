@@ -117,7 +117,7 @@ public class Level2UserServiceImplMockitoTest {
         try {
             userService.createUser(user);
         }catch (UserAlreadyExistsException e){
-            verify(entityManager).persist(Matchers.anyObject());
+            verify(entityManager).find(User.class,"test_user");
             verifyNoMoreInteractions(entityManager);
         } catch (Exception e){
             fail();

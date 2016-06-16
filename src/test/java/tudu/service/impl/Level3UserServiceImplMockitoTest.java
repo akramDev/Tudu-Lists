@@ -3,6 +3,7 @@ package tudu.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
+import tudu.domain.Todo;
 import tudu.domain.TodoList;
 import tudu.domain.User;
 import tudu.service.UserAlreadyExistsException;
@@ -50,8 +51,13 @@ public class Level3UserServiceImplMockitoTest {
     @Test
     public void when_todolist_created_then_the_name_is_welcome_2(){
 
+        userService.createNewTodoList(user);
 
+        ArgumentCaptor<TodoList> todoListCaptor = ArgumentCaptor.forClass(TodoList.class);
+        verify(entityManager).persist(todoListCaptor.capture());
 
+        TodoList todoList =  todoListCaptor.getAllValues().get(0);
+        assertEquals("Welcome!", todoList.getName());
     }
 
 }

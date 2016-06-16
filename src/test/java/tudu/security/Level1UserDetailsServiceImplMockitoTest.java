@@ -3,9 +3,12 @@ package tudu.security;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import tudu.domain.Role;
 import tudu.domain.RolesEnum;
@@ -19,19 +22,16 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class Level1UserDetailsServiceImplMockitoTest {
+
+    @InjectMocks
+    UserDetailsServiceImpl userDetailsService;
 
     @Mock
     UserService userService;
-    @InjectMocks
-    UserDetailsServiceImpl userDetailsService = new UserDetailsServiceImpl();
-
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-
-    }
 
     /*
     * Type : Test état
@@ -55,5 +55,6 @@ public class Level1UserDetailsServiceImplMockitoTest {
         assertEquals(user.getPassword(), userDetails.getPassword());
         assertEquals(roles.size(), userDetails.getAuthorities().size());
         assertEquals(RolesEnum.ROLE_ADMIN.toString(), userDetails.getAuthorities().iterator().next().getAuthority());
+        //assertThat(userDetails.getAuthorities()).extracting(GrantedAuthority::getAuthority, ga - > ga.)
     }
 }

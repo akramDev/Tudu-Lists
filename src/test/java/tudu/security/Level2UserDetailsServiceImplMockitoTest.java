@@ -35,14 +35,12 @@ public class Level2UserDetailsServiceImplMockitoTest {
     * Méhode : loadUserByUsername
 
     */
-    @Test
+    @Test(expected = UsernameNotFoundException.class)
     public void loadByUsername_throw_UsernameNotFoundException() {
-        try {
+
             String login = "akram";
             when(userService.findUser(login)).thenThrow(new ObjectRetrievalFailureException(User.class, login));
             UserDetails userDetails = userDetailsService.loadUserByUsername(login);
-        }catch (Exception e){
-            Assert.assertTrue(e instanceof UsernameNotFoundException);
-        }
+
     }
 }
